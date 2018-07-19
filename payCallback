@@ -1,0 +1,96 @@
+
+[]
+array (
+)
+Array
+[]
+[]
+null
+
+Array
+array (
+)
+NULL
+'250'
+array (
+  'pay_type' => '250',
+  'user_id' => '1506',
+  'user_name' => '你是谁？',
+)
+array (
+  'USER' => 'nginx',
+  'HOME' => '/var/cache/nginx',
+  'FCGI_ROLE' => 'RESPONDER',
+  'SCRIPT_FILENAME' => '/data/sample-php/payCallback.php',
+  'QUERY_STRING' => '',
+  'REQUEST_METHOD' => 'POST',
+  'CONTENT_TYPE' => 'application/json',
+  'CONTENT_LENGTH' => '178',
+  'SCRIPT_NAME' => '/payCallback.php',
+  'REQUEST_URI' => '/payCallback.php',
+  'DOCUMENT_URI' => '/payCallback.php',
+  'DOCUMENT_ROOT' => '/etc/nginx/html',
+  'SERVER_PROTOCOL' => 'HTTP/1.1',
+  'REQUEST_SCHEME' => 'http',
+  'GATEWAY_INTERFACE' => 'CGI/1.1',
+  'SERVER_SOFTWARE' => 'nginx/1.10.2',
+  'REMOTE_ADDR' => '103.47.242.219',
+  'REMOTE_PORT' => '36382',
+  'SERVER_ADDR' => '223.203.221.49',
+  'SERVER_PORT' => '8688',
+  'SERVER_NAME' => 'localhost',
+  'REDIRECT_STATUS' => '200',
+  'HTTP_HOST' => '223.203.221.49:8688',
+  'HTTP_USER_AGENT' => 'Go-http-client/1.1',
+  'HTTP_CONTENT_LENGTH' => '178',
+  'HTTP_CONTENT_TYPE' => 'application/json',
+  'HTTP_ACCEPT_ENCODING' => 'gzip',
+  'PHP_SELF' => '/payCallback.php',
+  'REQUEST_TIME_FLOAT' => 1531993273.601727,
+  'REQUEST_TIME' => 1531993273,
+)
+array (
+  'USER' => 'nginx',
+  'HOME' => '/var/cache/nginx',
+  'FCGI_ROLE' => 'RESPONDER',
+  'SCRIPT_FILENAME' => '/data/sample-php/payCallback.php',
+  'QUERY_STRING' => '',
+  'REQUEST_METHOD' => 'POST',
+  'CONTENT_TYPE' => 'application/json',
+  'CONTENT_LENGTH' => '178',
+  'SCRIPT_NAME' => '/payCallback.php',
+  'REQUEST_URI' => '/payCallback.php',
+  'DOCUMENT_URI' => '/payCallback.php',
+  'DOCUMENT_ROOT' => '/etc/nginx/html',
+  'SERVER_PROTOCOL' => 'HTTP/1.1',
+  'REQUEST_SCHEME' => 'http',
+  'GATEWAY_INTERFACE' => 'CGI/1.1',
+  'SERVER_SOFTWARE' => 'nginx/1.10.2',
+  'REMOTE_ADDR' => '103.47.242.219',
+  'REMOTE_PORT' => '36422',
+  'SERVER_ADDR' => '223.203.221.49',
+  'SERVER_PORT' => '8688',
+  'SERVER_NAME' => 'localhost',
+  'REDIRECT_STATUS' => '200',
+  'HTTP_HOST' => '223.203.221.49:8688',
+  'HTTP_USER_AGENT' => 'Go-http-client/1.1',
+  'HTTP_CONTENT_LENGTH' => '178',
+  'HTTP_CONTENT_TYPE' => 'application/json',
+  'HTTP_ACCEPT_ENCODING' => 'gzip',
+  'PHP_SELF' => '/payCallback.php',
+  'REQUEST_TIME_FLOAT' => 1531993386.403434,
+  'REQUEST_TIME' => 1531993386,
+)
+php://input
+{"user_id":"227","goodsname":"iphone 8x","pay_type":"200","orderid":"15319916411626434","key":"268413a777da2ba4fc84d356c4496357","price":"100","out_order_id":"20180719171500140"}
+{"user_id":"227","goodsname":"iphone 8x","pay_type":"200","orderid":"15319916411626434","key":"268413a777da2ba4fc84d356c4496357","price":"100","out_order_id":"20180719171500140"}
+{"user_id":"227","goodsname":"iphone 8x","pay_type":"200","orderid":"15319916411626434","key":"268413a777da2ba4fc84d356c4496357","price":"100","out_order_id":"20180719171500140"}
+15319916411626434
+{"user_id":"227","goodsname":"iphone 8x","pay_type":"200","orderid":"15319916411626434","key":"268413a777da2ba4fc84d356c4496357","price":"100","out_order_id":"20180719171500140"}
+Array
+{"user_id":"227","goodsname":"iphone 8x","pay_type":"200","orderid":"15319916411626434","key":"268413a777da2ba4fc84d356c4496357","price":"100","out_order_id":"20180719171500140"}
+15319896785396421
+{"user_id":"227","goodsname":"iphone 8x","pay_type":"200","orderid":"15319916411626434","key":"268413a777da2ba4fc84d356c4496357","price":"100","out_order_id":"20180719171500140"}
+{"user_id":"227","goodsname":"iphone 8x","pay_type":"200","orderid":"15319947961810455","key":"35bec1c9fba7892af0c3ce9b024812f0","price":"100","out_order_id":"20180719180735147"}
+{"user_id":"227","goodsname":"iphone 8x","pay_type":"200","orderid":"15319948946535069","key":"69890163b4630e2676372383adc40520","price":"100","out_order_id":"20180719180913148"}
+{"user_id":"227","goodsname":"魅族 Pro","pay_type":"200","orderid":"15319949666604062","key":"f7d17e193ac0eb2771e8df8cf5acce62","price":"3","out_order_id":"20180719181025150"}

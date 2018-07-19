@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+
+    <title>订单列表</title>
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <style>
+
+
+    </style>
+
+</head>
+
+<body>
+<div id="app">
+    <a href="index.html">
+        <el-button type="primary">购买商品</el-button>
+    </a>
+
+    <el-table :data="orderList" stripe style="width: 100%">
+        <el-table-column type="expand">
+            <template slot-scope="scope">
+                <el-form label-position="left"  label-width="100px" class="demo-table-expand">
+                    <el-form-item label="订单id">
+                        <span>{{ scope.row.orderid }}</span>
+                    </el-form-item>
+                    <el-form-item label="平台id">
+                        <span>{{ scope.row.out_order_id }}</span>
+                    </el-form-item>
+                    <el-form-item label="创建时间">
+                        {{scope.row.created_at}}
+                    </el-form-item>
+                    <el-form-item label="支付二维码">
+                        <img :src="scope.row.qrcodeUrl" alt="" style="width: 100%;">
+                    </el-form-item>
+                </el-form>
+            </template>
+        </el-table-column>
+        <!-- <el-table-column prop="uid" label="uid"></el-table-column> -->
+        <el-table-column prop="price" label="价格"></el-table-column>
+        <el-table-column prop="pay_type" label="支付方式">
+            <template slot-scope="scope">
+                <span>{{ payTypeMap[scope.row.pay_type] }}</span>
+            </template>
+        </el-table-column>
+        <el-table-column prop="goodsname" label="商品名称"></el-table-column>
+        <el-table-column prop="status" label="状态">
+            <template slot-scope="scope">
+                {{statusMap[scope.row.status]}}
+            </template>
+        </el-table-column>
+        <el-table-column prop="qrcodeUrl" label="操作">
+            <template slot-scope="scope">
+                <el-button @click="() => {getPayStatus(scope.row)}" type="primary" size="small">刷新状态</el-button>
+                <el-button @click="() => {appeal(scope.row)}" type="warning" size="small">申诉</el-button>
+            </template>
+        </el-table-column>
+    </el-table>
+</div>
+<script src="https://unpkg.com/jquery@3.3.1/dist/jquery.js"></script>
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<!-- 引入组件库 -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script src="http://share.axingxing.com/allstar/js/common.js"></script>
+<script>
+    var baseUrl = mutil.getQueryString('baseUrl') || location.protocol + '//' + window.location.host;
+
+    new Vue({
+        el: '#app',
+        data() {
+            return {
+                orderList: [],
+                payTypeMap: {
+                    100: '支付宝',
+                    200: '微信'
+                },
+                statusMap: {
+                    0: '默认状态',
+                    1: '支付完成',
+                    2: '支付二维码生成',
+                    3: '支付失败',
+                    4: '二维码失效',
+                },
+            }
+        },
+        methods: {
+            getPayStatus(item) {
+                var self = this;
+                $.ajax({
+                    url: baseUrl + '/payStatusQuery.php',
+                    method: 'get',
+                    dataType: 'json',
+                    data: {
+                        orderid: item.orderid,
+                        out_order_id: item.out_order_id
+                    },
+                }).then(res => {
+                    if (res.code === '1') {
+                    item.status = res.data.result.status
+                    self.$message.success('查询成功')
+                }else{
+                    self.$message.error(res.msg)
+                }
+            }, function (res) {
+                    console.log(res)
+                    self.$message.error('请求失败')
+                });
+            },
+            appeal(item) {
+                var self = this;
+                $.ajax({
+                    url: baseUrl + '/appeal.php',
+                    method: 'get',
+                    dataType: 'json',
+                    data: {
+                        orderid: item.orderid,
+                        out_order_id: item.out_order_id,
+                        cert_img: 'www.baidu.com',
+                    },
+                }).then(res => {
+                    if (res.code === '1') {
+                    self.$message.success('申诉操作成功')
+                } else {
+                    self.$message.error(res.msg)
+                }
+            }, function (res) {
+                    console.log(res)
+                    self.$message.error('请求失败')
+                });
+            }
+        },
+        created: function(){
+            var self = this;
+            $.ajax({
+                url: baseUrl + '/getOrderList.php',
+                method: 'get',
+                dataType: 'json',
+                data: {},
+            }).then(res => {
+                if (res.code === '1') {
+                self.orderList = res.data.list;
+            }
+        }, function (res) {
+                console.log(res)
+                self.$message.error('请求失败')
+            });
+        }
+    })
+</script>
+</body>
+
+</html>

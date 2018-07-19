@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+
+    <title>支付</title>
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+</head>
+
+<body>
+<div id="app">
+    <a href="/list.html"><el-button type="primary">查看订单</el-button></a>
+    <!-- <a href="wxp://f2f10zVQ4f9XLCKfvqyDXTvRd2Kwetpi0Kvz"><el-button type="primary">微信支付</el-button></a>
+    <a href="HTTPS://QR.ALIPAY.COM/FKX01608U7CBCRVKJA2R28"><el-button type="primary">支付包</el-button></a> -->
+    <el-form ref="form" :model="form" :rules="rules" label-width="100px">
+        <el-form-item prop="goodsname" label="商品名称">
+            <el-select v-model="form.goodsname" @change="changeShop" placeholder="请选择">
+                <el-option v-for="item in shops" :key="item.name" :label="item.name" :value="item.name">
+                </el-option>
+            </el-select>
+        </el-form-item>
+        <el-form-item prop="price" label="商品价格">
+            {{form.price / 100}}元
+        </el-form-item>
+        <el-form-item prop="pay_type" label="支付方式">
+            <el-radio v-model="form.pay_type" label="100">支付宝</el-radio>
+            <el-radio v-model="form.pay_type" label="200">微信</el-radio>
+        </el-form-item>
+        <!-- <el-form-item prop="notify_url" label="回调url">
+          <el-input v-model="form.notify_url"></el-input>
+        </el-form-item>
+        <el-form-item prop="orderid" label="订单id">
+          <el-input v-model="form.orderid"></el-input>
+        </el-form-item> -->
+
+        <el-form-item label="用户id">
+            <!-- <el-input v-model="form.orderuid"></el-input> -->
+            {{form.orderuid}}
+        </el-form-item>
+        <el-form-item>
+            <el-button type="primary" @click="onSubmit">购买</el-button>
+            <!-- <el-button>取消</el-button> -->
+        </el-form-item>
+    </el-form>
+
+    <!-- <el-button @click="showQrcode = true">Button</el-button> -->
+    <el-dialog :visible.sync="showQrcode" :fullscreen="true" title="请扫码支付" style="text-align: center;">
+        <span style="color: red">{{Math.floor(this.time / 60)}}:{{this.time % 60}}内有效</span>
+        <p style="text-align: center"><img :src="qrcodeUrl" alt="" width="250"></p>
+    </el-dialog>
+    <el-dialog :visible.sync="showPayConfirm" title="支付确认" style="text-align: center;">
+
+        <el-button type="primary" @click="payConfirm">确认支付完成</el-button>
+    </el-dialog>
+    <iframe v-if="payUrl" :src="payUrl" style="display: none"></iframe>
+</div>
+<script src="https://unpkg.com/jquery@3.3.1/dist/jquery.js"></script>
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<!-- 引入组件库 -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script src="http://share.axingxing.com/allstar/js/common.js"></script>
+<script>
+    // window.location.href = 'HTTPS://QR.ALIPAY.COM/FKX01608U7CBCRVKJA2R28';
+    // window.location.href = 'wxp://f2f10zVQ4f9XLCKfvqyDXTvRd2Kwetpi0Kvz';
+//    var baseUrl = mutil.getQueryString('baseUrl') || location.protocol + '//' + window.location.host;
+    var baseUrl = '/';
+    console.log(baseUrl);
+    var checkPayStatusTimer = null;
+    var data = new Vue({
+        el: '#app',
+        data() {
+            return {
+                time: 3 * 60,
+                showQrcode: false,
+                showPayConfirm: false,
+                qrcodeUrl: '',
+                payUrl: '',
+                form: {
+                    uid: '227591459098857472',
+                    price: '100',
+                    pay_type: '200',
+                    // notify_url: '111',
+                    // orderid: '111',
+                    goodsname: 'iphone 8x',
+                    orderuid: '227',
+                },
+                rules: {
+                    // uid: [
+                    //   { required: true, message: '请输入', trigger: 'blur' },
+                    // ],
+                    // price: [
+                    //   { required: true, message: '请输入', trigger: 'blur' },
+                    // ],
+                    // pay_type: [
+                    //   { required: true, message: '请输入', trigger: 'blur' },
+                    // ],
+                    // goodsname: [
+                    //   { required: true, message: '请输入', trigger: 'blur' },
+                    // ],
+                },
+                shops: [
+                    {price: 1, name: 'iphone 8x'},
+                    {price: 2, name: '华为Mate10'},
+                    {price: 3, name: '魅族 Pro'},
+                ],
+                statusMap: {
+                    0: '默认状态',
+                    1: '支付完成',
+                    2: '支付二维码生成',
+                    3: '支付失败',
+                    4: '二维码失效',
+                },
+            }
+        },
+        methods: {
+            changeShop(){
+                var shop = this.shops.find(item => item.name == this.form.goodsname);
+                this.form.price = shop.price;
+            },
+            payConfirm(){
+                this.showPayConfirm = false;
+                this.checkPayStatus();
+            },
+            onSubmit() {
+                this.$refs['form'].validate((valid) => {
+                    if (valid) {
+                        $.ajax({
+                            url: baseUrl + 'pay.php',
+                            method: 'get',
+                            dataType: 'json',
+                            data: this.form,
+                        }).then(res => {
+                            if(res.code === '1'){
+                            this.pay(res.data)
+                            // alert('请求成功')
+                        }else{
+                            console.log(res)
+                            this.$notify({
+                                type: 'danger',
+                                title: res.msg,
+                                message: res.data.xingxingPayPlatform
+                            });
+                        }
+                    }, function(res){
+                            this.$notify('请求失败');
+                        });
+                    }
+                });
+            },
+            checkPayStatus(isShowStatusMsg){
+                $.ajax({
+                    url: baseUrl + 'orderSelect.php',
+                    method: 'get',
+                    dataType: 'json',
+                    data: this.form,
+                }).then(res => {
+                    if (res.code === '1') {
+                    if(res.data.status == 1){
+                        this.$notify({
+                            type: 'success',
+                            title: '支付状态',
+                            message: '支付成功'
+                        });
+                        this.stopCheckPayStatus();
+                        setTimeout(function(){
+                            window.location.href = './list.html';
+                        });
+                    }else{
+                        if(isShowStatusMsg){
+                            this.$notify({
+                                type: 'danger',
+                                title: '支付状态',
+                                // message: this.statusMap[res.data.status]
+                                message: '支付失败'
+                            });
+                        }
+                    }
+                } else {
+                    this.$notify({
+                        type: 'danger',
+                        title: res.msg,
+                        message: res.data.xingxingPayPlatform
+                    });
+                }
+            }, function (res) {
+                    this.$notify('请求失败');
+                });
+            },
+            qrcodeDisabled(){
+                $.ajax({
+                    url: baseUrl + '/7',
+                    method: 'get',
+                    dataType: 'json',
+                    data: this.form,
+                }).then(res => {
+                    if (res.code === '1') {
+                    if(res.data.status == 1){
+
+                    }
+                } else {
+
+                }
+            }, function (res) {
+                    // this.$notify('请求失败');
+                });
+            },
+            startCheckPayStatus(){
+                checkPayStatusTimer = setInterval(() => {
+                        this.time --;
+                this.checkPayStatus();
+                if(this.time <= 0){
+                    this.qrcodeDisabled();
+                    this.stopCheckPayStatus();
+                }
+            }, 1 * 1000);
+            },
+            stopCheckPayStatus(){
+                clearInterval(checkPayStatusTimer);
+                this.showQrcode = false;
+                this.form.qrcodeUrl = '';
+                this.time = 3 * 60;
+            },
+            pay(data){
+                this.$set(this.form, 'orderid', data.orderid);
+                if(mutil.isPC || this.form.pay_type == 200){
+                    this.showQrcode = true;
+                    this.qrcodeUrl = data.qrcodeUrl;
+                    this.startCheckPayStatus();
+                }else{
+                    // alert(data.payUrl)
+                    this.payUrl = data.payUrl;
+                    setTimeout(() => {
+                        this.showPayConfirm = true;
+                }, 3 * 1000);
+
+                }
+            }
+        }
+    })
+</script>
+</body>
+
+</html>
